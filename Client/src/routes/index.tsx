@@ -1,6 +1,5 @@
 import routes from "../config/routes";
 import categoryAdd from "../pages/admin/CategoryAdd";
-import categoryPage from "../pages/admin/CategoryPage";
 import categoryUpdate from "../pages/admin/CategoryUpdate";
 import dashboardPage from "../pages/admin/DashboardPage";
 import productAdd from "../pages/admin/ProductAdd";
@@ -11,6 +10,7 @@ import productDetail from "../pages/client/ProductDetail";
 import cart from "../pages/client/Cart";
 import signin from "../pages/client/Signin/index.";
 import signup from "../pages/client/Signup";
+import categoryPage from "../pages/admin/CategoryPage";
 
 export const publicRoutes = [
     { path: routes.home, Component: homePage },
