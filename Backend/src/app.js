@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/database";
 import categoryRouter from "./routes/category";
 import productRouter from "./routes/product";
+import uploadRouter from "./routes/upload";
 
 dotenv.config();
 
@@ -17,5 +18,6 @@ connectDB(process.env.MONGODB_URL)
 // middleware
 app.use("/api/categories", categoryRouter)
 app.use("/api/products", productRouter)
+app.use("/api/images", uploadRouter);
 
 export const viteNodeApp = app;

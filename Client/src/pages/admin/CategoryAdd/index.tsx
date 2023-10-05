@@ -53,14 +53,14 @@ const categoryAdd = () => {
             autoComplete="off"
             className="mx-auto max-w-[500px]"
         >
-            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+            <Form.Item name="name" label="Name" rules={[{ required: true, message: 'Please input your Name!' }]}>
                 <Input />
             </Form.Item>
 
             <Form.Item>
                 <Space>
                     <SubmitButton form={form} />
-                    {/* <Button htmlType="reset">Reset</Button> */}
+                    <Button htmlType="reset">Reset</Button>
                 </Space>
             </Form.Item>
         </Form>

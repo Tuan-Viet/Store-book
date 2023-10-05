@@ -1,4 +1,11 @@
-import { Space, Table, message, Popconfirm, Spin } from 'antd';
+import {
+    Space,
+    Table,
+    message,
+    Popconfirm,
+    Spin,
+    Image
+} from 'antd';
 import {
     EditFilled,
     DeleteFilled
@@ -38,6 +45,17 @@ const productPage = () => {
             dataIndex: 'name',
             key: 'name',
             render: (text: String) => <a>{text}</a>,
+        },
+        {
+            title: 'Image',
+            key: 'image',
+            render: (record: any) => (
+                <Image
+                    width={70}
+                    src={record.images[0]}
+                    alt="Product Image"
+                />
+            ),
         },
         {
             title: 'Price',
@@ -92,7 +110,7 @@ const productPage = () => {
         <div className="">
             {contextHolder}
             <h3 className="text-3xl pb-5 font-bold uppercase text-[#1677ff]">
-                List Category
+                List Product
             </h3>
             {isLoading ? (
                 <div className="text-center ">
@@ -100,7 +118,7 @@ const productPage = () => {
                 </div>
 
             ) : (
-                <Table columns={columns} dataSource={products} />
+                <Table columns={columns} dataSource={products} pagination={{ pageSize: 20 }} />
 
             )}
         </div>
