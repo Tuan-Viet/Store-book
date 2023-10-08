@@ -86,16 +86,14 @@ const productPage = () => {
                     <Popconfirm
                         title="Delete category"
                         description="Are you sure to delete this category?"
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
                         onConfirm={() => confirm(record._id)}
-                        // eslint-disable-next-line @typescript-eslint/no-misused-promises
                         okText="Yes"
                         cancelText="No"
                         okButtonProps={{ className: "text-white bg-blue-400" }}
                     >
                         <DeleteFilled className='text-xl text-red-400' />
                     </Popconfirm>
-                    <Link to={`/admin/category/update/${record._id}`}>
+                    <Link to={`/admin/product/update/${record._id}`}>
                         <EditFilled className='text-xl text-yellow-400' />
                     </Link>
                 </Space>
