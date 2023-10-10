@@ -43,8 +43,8 @@ export const getProducts = async (req, res) => {
         const {
             _page = 1,
             _limit = 8,
-            _sort = "createAt",
-            _order = "asc",
+            _sort = "createdAt",
+            _order = "desc",
             _searchText,
             _minPrice,
             _maxPrice

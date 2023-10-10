@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import {
     UploadOutlined,
-    DeleteFilled
+    CloseCircleFilled
 } from "@ant-design/icons";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../redux/hook';
@@ -200,10 +200,10 @@ const productUpdate = () => {
                             <Image.PreviewGroup>
                                 <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                     {imageList.map((image, index) => (
-                                        <div key={index} style={{ marginRight: '10px', marginBottom: '10px' }}>
-                                            <Badge count={<DeleteFilled
+                                        <div key={index} style={{ marginRight: '20px', marginBottom: '20px' }}>
+                                            <Badge count={<CloseCircleFilled
                                                 onClick={() => handleRemoveImage(index)}
-                                                className='text-lg text-red-500'
+                                                className='text-xl text-red-500 rounded-full bg-white'
                                             />}>
                                                 <Image width={100} src={image} />
                                             </Badge>

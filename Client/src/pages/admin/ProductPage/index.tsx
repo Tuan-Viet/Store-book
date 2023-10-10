@@ -4,22 +4,28 @@ import {
     message,
     Popconfirm,
     Spin,
-    Image
+    Image,
+    Button,
 } from 'antd';
 import {
     EditFilled,
-    DeleteFilled
+    DeleteFilled,
+    PlusOutlined,
+    SearchOutlined
 } from '@ant-design/icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from '../../../redux/hook';
 import { getAllProduct, removeProduct } from '../../../redux/Reducer/ProductSlice';
 import ICategory from '../../../interface/category';
+import { useForm } from 'react-hook-form';
+
 
 const productPage = () => {
     const dispatch = useAppDispatch();
-
+    const navigate = useNavigate();
     const products = useAppSelector((state) => state.Product.products);
+    const { register, handleSubmit } = useForm();
 
     useEffect(() => {
         setIsLoading(true);
@@ -31,6 +37,27 @@ const productPage = () => {
         });
     }, [dispatch]);
     const [messageApi, contextHolder] = message.useMessage();
+
+    const urlParams = new URLSearchParams(location.search);
+
+    const handFound = (e: any) => {
+        const searchText = e._searchText;
+
+        urlParams.set("_searchText", encodeURIComponent(searchText));
+        console.log("searchText:", searchText);
+
+        const queryString = `${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+
+        navigate(`?${queryString}`);
+        setIsLoading(true);
+        void dispatch(getAllProduct(queryString)).then(() => {
+            setIsLoading(false);
+        }).catch((error) => {
+            setIsLoading(false);
+            console.log(error);
+        });
+    };
+
     const confirm = async (id: string) => {
         await dispatch(removeProduct(id));
         messageApi.open({
@@ -41,21 +68,20 @@ const productPage = () => {
 
     const columns = [
         {
-            title: 'Name',
-            dataIndex: 'name',
+            title: 'Product Name',
             key: 'name',
-            render: (text: String) => <a>{text}</a>,
-        },
-        {
-            title: 'Image',
-            key: 'image',
             render: (record: any) => (
-                <Image
-                    width={70}
-                    src={record.images[0]}
-                    alt="Product Image"
-                />
+                <div className="flex items-center  ">
+                    <Image
+                        width={70}
+                        src={record.images[0]}
+                        alt="Product Image"
+                        className=""
+                    />
+                    <a className='w-full overflow-hidden'>{record.name}</a>
+                </div>
             ),
+            className: 'w-1/4',
         },
         {
             title: 'Price',
@@ -63,10 +89,15 @@ const productPage = () => {
             key: 'price',
         },
         {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
+            title: 'Author',
+            dataIndex: 'author',
+            key: 'price',
         },
+        // {
+        //     title: 'Description',
+        //     dataIndex: 'description',
+        //     key: 'description',
+        // },
         {
             title: 'Quantity',
             dataIndex: 'quantity',
@@ -101,24 +132,47 @@ const productPage = () => {
         },
 
     ];
-
-
     const [isLoading, setIsLoading] = useState(false);
     return (
         <div className="">
             {contextHolder}
-            <h3 className="text-3xl pb-5 font-bold uppercase text-[#1677ff]">
-                List Product
-            </h3>
-            {isLoading ? (
-                <div className="text-center ">
-                    <Spin size="large" />
+            <Space className='flex justify-between mb-5'>
+                <div className="">
+                    <span className="block text-xl text-[#1677ff]">
+                        Product List
+                    </span>
+                    <span className="block text-base  text-[#1677ff]">
+                        Manage your products
+                    </span>
                 </div>
+                <Link to={`add`}>
+                    <Button type='primary' className='bg-blue-500'
+                        icon={<PlusOutlined />}
+                    >
+                        Add New Product
+                    </Button>
+                </Link>
+            </Space>
+            <div className="border p-3 rounded-lg min-h-screen bg-white">
+                <div className="pb-6 pt-3">
+                    <form onSubmit={handleSubmit(handFound)} >
+                        <input type="text" className='border p-2 w-64 outline-none '
+                            {...register("_searchText")}
+                            placeholder="" />
+                        <button type="submit" className='p-2 bg-blue-500'>
+                            <SearchOutlined className='text-white' />
+                        </button>
+                    </form>
+                </div>
+                {isLoading ? (
+                    <div className="text-center ">
+                        <Spin size="large" />
+                    </div>
 
-            ) : (
-                <Table columns={columns} dataSource={products} pagination={{ pageSize: 20 }} />
-
-            )}
+                ) : (
+                    <Table columns={columns} dataSource={products} pagination={{ pageSize: 20 }} />
+                )}
+            </div>
         </div>
     )
 }

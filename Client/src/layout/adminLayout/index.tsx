@@ -43,25 +43,33 @@ const items: MenuItem[] = [
 ];
 
 const AdminLayout = ({ children }: Props) => {
-    const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+            <Sider
+                style={{
+                    overflow: 'auto',
+                    height: '100vh',
+                    position: 'fixed',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                }}
+            >
                 <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
             </Sider>
-            <Layout>
+            <Layout style={{ marginLeft: 200 }}>
                 {/* <Header style={{ padding: 0, background: colorBgContainer }} /> */}
-                <Content style={{ margin: '16px' }}>
+                <Content className=''>
 
-                    <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
+                    <div className='bg-slate-50' style={{ padding: 24, minHeight: 360 }}>
                         {children}
                     </div>
                 </Content>
-                <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
+                {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer> */}
             </Layout>
         </Layout>
     );

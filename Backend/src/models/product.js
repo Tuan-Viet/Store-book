@@ -59,7 +59,6 @@ const productSchema = new Schema(
 );
 productSchema.index({
     name: "text",
-    description: "text",
     author: "text",
 });
 productSchema.plugin(paginate);
