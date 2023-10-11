@@ -24,7 +24,6 @@ const signin = () => {
                     className="mb-0 mt-8 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8 bg-white"
                 >
                     <p className="text-center text-gray-500 text-lg font-medium">Please sign in in to continue</p>
-
                     <div>
                         <label htmlFor="email" className="sr-only">Email</label>
 
@@ -32,9 +31,8 @@ const signin = () => {
                             <input
                                 type="email"
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm border outline-none text-gray-500"
-                                placeholder="Enter email"
+                                placeholder="Email"
                             />
-
                             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 24 24"
@@ -45,7 +43,6 @@ const signin = () => {
                                         strokeLinecap="round"
                                         d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
                                 </svg>
-
                             </span>
                         </div>
                         <div className="relative">
@@ -54,18 +51,16 @@ const signin = () => {
                             </span> */}
                         </div>
                     </div>
-
                     <div >
                         <label htmlFor="password" className="sr-only">Password</label>
                         <div className="relative mt-7">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm border outline-none text-gray-500"
-                                placeholder="Enter password"
+                                placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-
                             <span className="absolute inset-y-0 end-0 grid place-content-center px-4 cursor-pointer" onClick={togglePasswordVisibility}>
                                 {showPassword ? (
                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -81,8 +76,6 @@ const signin = () => {
                                             10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65
                                             3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                                     </svg>
-
-
                                 ) : (
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -108,7 +101,6 @@ const signin = () => {
                             </span> */}
                         </div>
                     </div>
-
                     <button
                         type="submit"
                         className="block w-full rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white "
