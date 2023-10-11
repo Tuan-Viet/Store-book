@@ -9,7 +9,7 @@ import {
     LogoutOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Breadcrumb, Layout, Menu, Space, theme } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -59,6 +59,11 @@ const AdminLayout = ({ children }: Props) => {
                     bottom: 0,
                 }}
             >
+                <Space className='flex justify-center'>
+                    <img src="../../public/image/logo.png" alt=""
+                        className=' w-24 '
+                    />
+                </Space>
                 <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
             </Sider>
             <Layout style={{ marginLeft: 200 }}>

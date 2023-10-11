@@ -138,15 +138,15 @@ const productPage = () => {
             {contextHolder}
             <Space className='flex justify-between mb-5'>
                 <div className="">
-                    <span className="block text-xl text-[#1677ff]">
+                    <span className="block text-xl text-primary">
                         Product List
                     </span>
-                    <span className="block text-base  text-[#1677ff]">
+                    <span className="block text-base  text-primary">
                         Manage your products
                     </span>
                 </div>
                 <Link to={`add`}>
-                    <Button type='primary' className='bg-blue-500'
+                    <Button type='primary' className='bg-primary'
                         icon={<PlusOutlined />}
                     >
                         Add New Product
@@ -159,7 +159,7 @@ const productPage = () => {
                         <input type="text" className='border p-2 w-64 outline-none '
                             {...register("_searchText")}
                             placeholder="" />
-                        <button type="submit" className='p-2 bg-blue-500'>
+                        <button type="submit" className='p-2 bg-primary'>
                             <SearchOutlined className='text-white' />
                         </button>
                     </form>
