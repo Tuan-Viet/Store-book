@@ -1,9 +1,44 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
+import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+type FormDataType = {
+    fullname: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
 
 const signup = () => {
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+
+
+
+    const onFinish = async (data: FormDataType) => {
+        try {
+            await axios.post("http://localhost:8080/api/signup", data);
+            message.success("Successfully registered");
+            navigate("/signin");
+        } catch (error: any) {
+            if (error.response) {
+                // Lỗi phản hồi từ máy chủ
+                const serverErrorMessage = error.response.data.message; // Điều chỉnh dựa trên cấu trúc phản hồi thực tế từ máy chủ
+
+                // Hiển thị thông báo lỗi trong trường "email" của Form.Item
+                form.setFields([
+                    {
+                        name: 'email',
+                        errors: [serverErrorMessage],
+                    },
+                ]);
+            } else {
+                // Xử lý lỗi khác (không phải lỗi phản hồi từ máy chủ)
+                console.log(error);
+            }
+        }
+    };
     return <>
         <div className="mx-auto h-[100vh]  px-4 pt-5 bg-blue-50">
             <div className="mx-auto max-w-lg">
@@ -14,7 +49,7 @@ const signup = () => {
                 </Link>
                 <Form
                     form={form}
-                    // onFinish={onFinish}
+                    onFinish={onFinish}
                     initialValues={{ residence: ['zhejiang', 'hangzhou', 'xihu'], prefix: '86' }}
                     style={{ maxWidth: 600 }}
                     className="mb-0 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8 bg-white"
@@ -23,22 +58,34 @@ const signup = () => {
                     <p className="text-center text-gray-500 text-lg font-medium">Please sign Up in to continue</p>
 
                     <Form.Item
-                        name="fullName"
-                        rules={[{ required: true, message: 'Please input your Full Name!', whitespace: true }]}
+                        name="fullname"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your Full Name!',
+                                whitespace: true,
+                            },
+                        ]}
+
                     >
-                        <Input placeholder="Full Name"
+                        <Input
+                            placeholder="Full Name"
                             className="p-3"
                             suffix={
                                 <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
-                                        strokeWidth={1.5} stroke="currentColor"
-                                        className="w-4 h-4 text-gray-500">
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-4 h-4 text-gray-500"
+                                    >
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
-                                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                                        />
                                     </svg>
                                 </span>
                             }
@@ -54,8 +101,9 @@ const signup = () => {
                             {
                                 required: true,
                                 message: 'Please input your E-mail!',
-                            },
+                            }
                         ]}
+
                     >
                         <Input placeholder="E-mail"
                             className="p-3"
@@ -80,6 +128,10 @@ const signup = () => {
                                 required: true,
                                 message: 'Please input your password!',
                             },
+                            {
+                                min: 6,
+                                message: 'Password must be at least 6 characters long.',
+                            },
                         ]}
                     >
 
@@ -88,7 +140,7 @@ const signup = () => {
                         />
                     </Form.Item>
                     <Form.Item
-                        name="confirm"
+                        name="confirmPassword"
                         dependencies={['password']}
                         rules={[
                             {
