@@ -32,9 +32,8 @@ export const loginSchema = Joi.object({
         "string.empty": 'The "email" field cannot be empty!',
         "any.required": 'The "email" field is required!',
     }),
-    password: Joi.string().required().min(6).messages({
+    password: Joi.string().required().messages({
         "string.empty": "The 'password' field cannot be empty!",
-        "string.min": "Password must be at least {#limit} characters!",
         "any.required": "The 'password' field is required!",
     }),
 });

@@ -67,7 +67,7 @@ export const login = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({
-                message: `Account does not exist. Please check again`,
+                message: 'Account does not exist. Please check again',
             });
         }
 
@@ -75,7 +75,7 @@ export const login = async (req, res) => {
         const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
             return res.status(400).json({
-                message: `Wrong password. Please try again!`,
+                message: 'Wrong password. Please try again!',
             });
         }
 

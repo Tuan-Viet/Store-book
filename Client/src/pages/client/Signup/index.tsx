@@ -23,10 +23,8 @@ const signup = () => {
             navigate("/signin");
         } catch (error: any) {
             if (error.response) {
-                // Lỗi phản hồi từ máy chủ
-                const serverErrorMessage = error.response.data.message; // Điều chỉnh dựa trên cấu trúc phản hồi thực tế từ máy chủ
+                const serverErrorMessage = error.response.data.message;
 
-                // Hiển thị thông báo lỗi trong trường "email" của Form.Item
                 form.setFields([
                     {
                         name: 'email',
@@ -34,7 +32,6 @@ const signup = () => {
                     },
                 ]);
             } else {
-                // Xử lý lỗi khác (không phải lỗi phản hồi từ máy chủ)
                 console.log(error);
             }
         }
