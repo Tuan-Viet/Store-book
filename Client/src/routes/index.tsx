@@ -12,6 +12,9 @@ import signin from "../pages/client/Signin/index.";
 import signup from "../pages/client/Signup";
 import categoryPage from "../pages/admin/CategoryPage";
 import productsPage from "../pages/client/Products";
+import checkoutPage from "../pages/client/checkout";
+import OrderPage from "../pages/client/Order";
+import orderDetail from "../pages/client/OrderDetail";
 
 export const publicRoutes = [
     { path: routes.home, Component: homePage },
@@ -20,6 +23,9 @@ export const publicRoutes = [
     { path: routes.signin, Component: signin },
     { path: routes.signup, Component: signup },
     { path: routes.products, Component: productsPage },
+    { path: routes.checkout, Component: checkoutPage },
+    { path: routes.order, Component: OrderPage },
+    { path: routes.orderDetail, Component: orderDetail },
 ]
 
 export const privateRoutes = [

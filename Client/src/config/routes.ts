@@ -6,6 +6,9 @@ const routes = {
     cart: "/cart",
     signin: "/signin",
     signup: "/signup",
+    checkout: "/checkout",
+    order: "/order",
+    orderDetail: "/order/:id",
 
     // Admin 
     admin: "/admin",
