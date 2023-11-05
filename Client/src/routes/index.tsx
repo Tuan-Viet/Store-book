@@ -11,6 +11,7 @@ import cart from "../pages/client/Cart";
 import signin from "../pages/client/Signin/index.";
 import signup from "../pages/client/Signup";
 import categoryPage from "../pages/admin/CategoryPage";
+import productsPage from "../pages/client/Products";
 
 export const publicRoutes = [
     { path: routes.home, Component: homePage },
@@ -18,6 +19,7 @@ export const publicRoutes = [
     { path: routes.cart, Component: cart },
     { path: routes.signin, Component: signin },
     { path: routes.signup, Component: signup },
+    { path: routes.products, Component: productsPage },
 ]
 
 export const privateRoutes = [

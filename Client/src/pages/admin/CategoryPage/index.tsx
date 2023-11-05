@@ -13,7 +13,7 @@ import ICategory from '../../../interface/category';
 const categoryPage = () => {
     const dispatch = useAppDispatch();
 
-    const categories = useAppSelector((state) => state.Category.categories);
+    const categories = useAppSelector((state) => state.category.categories);
 
     useEffect(() => {
         setIsLoading(true);

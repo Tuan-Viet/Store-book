@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form';
 const productPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const products = useAppSelector((state) => state.Product.products);
+    const products = useAppSelector((state) => state.product.products);
     const { register, handleSubmit } = useForm();
 
     useEffect(() => {
@@ -89,9 +89,9 @@ const productPage = () => {
             key: 'price',
         },
         {
-            title: 'Author',
-            dataIndex: 'author',
-            key: 'price',
+            title: 'Discount',
+            dataIndex: 'discount',
+            key: 'discount',
         },
         // {
         //     title: 'Description',

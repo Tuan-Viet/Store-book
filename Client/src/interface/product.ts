@@ -4,6 +4,7 @@ interface IProduct {
     _id?: string;
     name: string;
     price: number;
+    discount: number;
     author: string;
     description: string;
     quantity: number;
