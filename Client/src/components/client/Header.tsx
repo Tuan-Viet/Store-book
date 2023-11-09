@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { Dispatch, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import {
     SearchOutlined,
     UserOutlined,
@@ -9,8 +9,11 @@ import {
     MenuOutlined
 } from '@ant-design/icons';
 import { Badge, Button, Drawer, Dropdown, Form, MenuProps, Popover, Space, message } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { AnyIfEmpty, useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../../redux/Reducer/authSlice";
+import { useAppSelector } from "../../redux/hook";
+import { getAllCart, removeCart } from "../../redux/Reducer/CartSlice";
+import ICart from "../../interface/cart";
 
 
 
@@ -19,10 +22,28 @@ const Header = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    const user = useSelector((state: any) => state.auth.auth);
+    const user = useAppSelector((state: any) => state.auth.auth);
+    const cartData = useAppSelector((state) => state.Cart.carts);
+    const carts = cartData.filter((cart: ICart) => cart.userId === user.user._id);
+
+    let totalMoney: number = 0;
+    carts?.map((item: any) => {
+        totalMoney += item.totalMoney
+    })
+
+    // const [quantity, setQuantity] = useState(1)
+    useEffect(() => {
+        // setIsLoading(true);
+        dispatch(getAllCart())
+    }, [dispatch]);
+
 
     const showDrawer = () => {
-        setOpen(true);
+        if (carts?.length === 0) {
+            message.info("Không có sản phẩm nào trong giở hàng")
+        } else {
+            setOpen(true);
+        }
     };
 
     const onClose = () => {
@@ -38,15 +59,16 @@ const Header = () => {
             <h1 className="uppercase text-center pb-2 mb-2 border-b-[1px] text-base tracking-widest text-[#333333]">
                 Thông tin tài khoản
             </h1>
-            <ul className="ml-5 text-sm">
+            <ul className="ml-5 text-sm ">
+                <span className="block text-base list-disc font-light mb-1">
+                    <span>Xin chào, </span>
+                    <span className="font-medium">
+                        {user.user.fullname}
+                    </span>
+                </span>
                 <li className="list-disc font-light mb-1">
                     <Link to="">Tài khoản của tôi</Link>
                 </li>
-                {/* {role == "admin" ? (
-                <li className="list-disc font-light mb-1">
-                    <Link to="">Quản trị</Link>
-                </li>
-            ) : null} */}
                 <li className="list-disc font-light mb-1">
                     <Link to="/order">Đơn hàng của tôi</Link>
                 </li>
@@ -148,7 +170,7 @@ const Header = () => {
                     {user ? (
                         <div className="">
                             {/* <HeartOutlined className="mr-4 text-2xl" /> */}
-                            <Badge count={5} className="mr-4" >
+                            <Badge count={carts.length} className="mr-4" >
                                 <ShoppingOutlined className="text-2xl text-[#333333]" onClick={showDrawer} />
                             </Badge>
                             <Popover content={acount} trigger="click" >
@@ -162,44 +184,30 @@ const Header = () => {
                         </div>
                     )}
 
-                    <Drawer title="GIỎ HÀNG (3)" placement="right" onClose={onClose} open={open}>
+                    <Drawer title={`GIỎ HÀNG (${carts.length})`} placement="right" onClose={onClose} open={open}>
                         <div className="pb-2 mb-2 border-b-[1px] text-[#333333]">
-                            <div className="flex justify-between mb-3">
-                                <div className="flex">
-                                    <img src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244869132.jpg" alt=""
-                                        className="w-12 h-auto bg-cover"
-                                    />
-                                    <div className="">
-                                        <span className="block text-sm font-medium">Danh Nhân Thế Giới: Napoleon</span>
-                                        <span className="block text-sm">250.000đ</span>
+                            {carts.map((cart: ICart) => (
+                                <div className="flex justify-between mb-3">
+                                    <div className="flex w-4/5">
+                                        <div className="flex h-20 w-20 items-center justify-center">
+                                            <img src={cart.image} alt=""
+                                                className="h-full w-auto object-cover"
+                                            />
+                                        </div>
+                                        <div className="w-3/5">
+                                            <span className="block text-sm font-medium text-[#333333] font-sans font-roboto overflow-hidden overflow-ellipsis h-[2.5rem] mb-1">
+                                                <span style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, overflow: "hidden" }}>
+                                                    {cart.nameProduct}
+                                                </span>
+                                            </span>
+                                            <span className="block text-sm"> {cart?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
+                                        </div>
                                     </div>
+                                    <span className="block text-sm w-1/5">SL: {cart.quantity}</span>
                                 </div>
-                                <span className="block text-sm">SL: 1</span>
-                            </div>
-                            <div className="flex justify-between mb-3">
-                                <div className="flex">
-                                    <img src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244869132.jpg" alt=""
-                                        className="w-12 h-auto bg-cover"
-                                    />
-                                    <div className="">
-                                        <span className="block text-sm font-medium">Danh Nhân Thế Giới: Napoleon</span>
-                                        <span className="block text-sm">250.000đ</span>
-                                    </div>
-                                </div>
-                                <span className="block text-sm">SL: 1</span>
-                            </div>
-                            <div className="flex justify-between mb-3">
-                                <div className="flex">
-                                    <img src="https://cdn0.fahasa.com/media/catalog/product/8/9/8935244869132.jpg" alt=""
-                                        className="w-12 h-auto bg-cover"
-                                    />
-                                    <div className="">
-                                        <span className="block text-sm font-medium">Danh Nhân Thế Giới: Napoleon</span>
-                                        <span className="block text-sm">250.000đ</span>
-                                    </div>
-                                </div>
-                                <span className="block text-sm">SL: 2</span>
-                            </div>
+                            ))}
+
+
                         </div>
                         <div className="flex justify-between ">
                             <Link to={`/cart`}

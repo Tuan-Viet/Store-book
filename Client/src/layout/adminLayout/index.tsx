@@ -72,6 +72,7 @@ const AdminLayout = ({ children }: Props) => {
     } = theme.useToken();
 
     const { auth } = useAppSelector((state) => state.auth);
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider

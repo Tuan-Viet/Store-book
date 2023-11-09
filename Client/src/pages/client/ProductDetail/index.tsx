@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Carousel, Form, InputNumber } from "antd";
+import { Breadcrumb, Button, Carousel, Form, InputNumber, message } from "antd";
 import Footer from "../../../components/client/Footer";
 import Header from "../../../components/client/Header";
 import {
@@ -7,14 +7,62 @@ import {
     MinusOutlined,
     ShoppingCartOutlined
 } from '@ant-design/icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../../../components/client/productCard";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../redux/hook";
+import { getAllProduct, getProduct } from "../../../redux/Reducer/ProductSlice";
+import IProduct from "../../../interface/product";
+import ICart from "../../../interface/cart";
+import { createCart, getAllCart, getCart, } from "../../../redux/Reducer/CartSlice";
 const productDetail = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const products = useAppSelector((state) => state.product.products);
+    // const categories = useAppSelector((state) => state.Category.categories);
+    const { auth } = useAppSelector((state) => state.auth);
+    console.log(auth);
+
+    useEffect(() => {
+        // setIsLoading(true);
+        dispatch(getAllProduct())
+    }, [dispatch]);
+
+
+    const { id } = useParams();
+    const product = products?.find((product: IProduct) => product._id === id);
+
+
+    const addToCart = async () => {
+        try {
+            if (product) {
+                const data = {
+                    productId: product._id || '',
+                    nameProduct: product.name,
+                    image: product.images[0],
+                    quantity: quantity,
+                    price: (product.discount ? product.discount : product.price),
+                    totalMoney: (product.discount ? product.discount * quantity : product.price * quantity),
+                    userId: auth.user._id
+                };
+                dispatch(createCart(data));
+                message.success("Sản phẩm đã thêm vào giỏ hàng")
+                // navigate(`/cart`)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const maxQuantity = product?.quantity
 
     const handleIncrement = () => {
-        setQuantity(quantity + 1);
+        if (quantity < maxQuantity!) {
+            setQuantity(quantity + 1);
+        } else {
+            message.warning('Số lượng vượt quá số lượng trong kho.');
+        }
     };
 
     const handleDecrement = () => {
@@ -22,61 +70,33 @@ const productDetail = () => {
             setQuantity(quantity - 1);
         }
     };
-    const product = {
-        _id: "1",
-        name: "Danh Nhân Thế Giới: Newton",
-        price: 300000,
-        discount: 210000,
-        author: "Neung In Publishing Company",
-        images: [
-            'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/danh_nhan_the_gioi_newton_tai_ban_2022/2022_11_03_16_21_26_1-390x510.jpg',
-            'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/danh_nhan_the_gioi_newton_tai_ban_2022/2022_11_03_16_21_26_2-390x510.jpg',
-            'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/danh_nhan_the_gioi_newton_tai_ban_2022/2022_11_03_16_21_26_3-390x510.jpg',
-            'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/danh_nhan_the_gioi_newton_tai_ban_2022/2022_11_03_16_21_26_5-390x510.jpg',
-            'https://cdn0.fahasa.com/media/flashmagazine/images/page_images/danh_nhan_the_gioi_newton_tai_ban_2022/2022_11_03_16_21_26_6-390x510.jpg',
-        ],
-        quantity: 12,
-    }
 
     const handleImageClick = (index: any) => {
         setSelectedImage(index);
     };
-
+    const cateProduct = products?.filter((newProduct: IProduct) => newProduct.categoryId?._id === product?.categoryId?._id);
+    const listCateProduct = cateProduct.slice(0, 5);
     return <>
         <Header />
         <div className="w-[1170px] mx-auto">
-            <div className="my-1">
-                <Breadcrumb
-                    items={[
-                        {
-                            href: '/',
-                            title: <HomeOutlined />,
-                        },
-                        {
-                            href: '/',
-                            title: 'Thiếu nhi',
-                        },
-                        {
-                            title: 'ApplicationDanh Nhân Thế Giới - Einstein',
-                        },
-                    ]}
-                />
-            </div>
-            <div className="flex p-3 mb-20">
+            <div className="flex p-3 mb-20 mt-10">
                 <div className="flex">
                     <div className="h-[300px] mr-10 ">
-                        {product.images.map((imageUrl, index) => (
-                            <div key={index} onClick={() => handleImageClick(index)} className="p-1">
-                                <img src={imageUrl} alt=""
-                                    className="w-14 transform transition-transform hover:scale-110"
-                                />
+                        {product?.images.map((imageUrl, index) => (
+                            <div key={index} onClick={() => handleImageClick(index)} className="h-20 w-20  overflow-hidden mb-3 relative group transform transition-transform hover:scale-110">
+                                <div className="h-full w-full flex items-center justify-center">
+                                    <img src={imageUrl} alt=""
+                                        className="h-full w-auto object-cover"
+                                    />
+                                </div>
+                                <div className="absolute rounded-md inset-0 border-2 border-transparent group-hover:border-primary"></div>
                             </div>
                         ))}
                     </div>
-                    <div className="w-[300px] h-[450px]">
-                        <div >
-                            <img src={product.images[selectedImage]} alt=""
-                                className="border w-[300px] object-cover"
+                    <div >
+                        <div className="w-[300px] h-[450px]">
+                            <img src={product?.images[selectedImage]} alt=""
+                                className=" object-cover"
                             />
                         </div>
                     </div>
@@ -84,32 +104,32 @@ const productDetail = () => {
                 <div className="pl-28 p-3">
                     <div className="">
                         <h1 className="font-medium text-3xl mb-3 text-[#333]">
-                            {product.name}
+                            {product?.name}
                         </h1>
                         <div className="mb-3">
                             <span className="mr-1 text-[#333]">
                                 Tác giả:
                             </span>
                             <span className="text-lg font-medium text-[#333]">
-                                {product.author}
+                                {product?.author}
                             </span>
                         </div>
                         <div className="mb-6">
-                            {product.discount === 0 ? (
+                            {product?.discount === 0 ? (
                                 <span className="text-2xl font-medium text-primary mr-2">
-                                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                    {product?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                                 </span>
                             ) : (
                                 <span className="text-2xl font-medium text-primary mr-2">
-                                    {product.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                    {product?.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                                 </span>
                             )}
 
-                            <span className={`text-base text-gray-500 line-through mr-2 ${product.discount === 0 ? 'hidden' : ''}`}>
-                                {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                            <span className={`text-base text-gray-500 line-through mr-2 ${product?.discount === 0 ? 'hidden' : ''}`}>
+                                {product?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                             </span>
-                            <span className={`text-sm font-medium text-white bg-red-500 p-1 rounded-lg ${product.discount === 0 ? 'hidden' : ''}`}>
-                                {Math.ceil(((product.price - product.discount) / product.price) * 100)}%
+                            <span className={`text-sm font-medium text-white bg-red-500 p-1 rounded-lg ${product?.discount === 0 ? 'hidden' : ''}`}>
+                                {product ? Math.ceil(((product.price - product.discount) / product.price) * 100) : 1}%
                             </span>
                         </div>
                         <div className="mb-6">
@@ -117,11 +137,13 @@ const productDetail = () => {
                                 Tình trạng:
                             </span>
                             <span className="text-lg font-medium text-primary">
-                                {product.quantity === 0 ? "Hết hàng" : "Còn hàng"}
+                                {product?.quantity === 0 ? "Hết hàng" : "Còn hàng"}
                             </span>
                         </div>
                         <div className="mb-6">
-                            <Form>
+                            <Form
+                                onFinish={addToCart}
+                            >
                                 <Form.Item
                                     name="quantity"
                                 >
@@ -149,6 +171,7 @@ const productDetail = () => {
                                                 <PlusOutlined />
                                             </button>
                                         </div>
+                                        <span className="ml-5 text-gray-400">Kho: {product?.quantity}</span>
                                     </div>
                                 </Form.Item>
                                 <Form.Item>
@@ -173,44 +196,19 @@ const productDetail = () => {
 
             <div className="mb-32">
                 <h3 className='uppercase border-l-4 border-b-2 p-3 my-3 border-primary '>
-                    Sản phẩm liên quan
+                    Sản phẩm cùng loại
                 </h3>
                 <div className="grid grid-cols-5 gap-4 my-5 px-3">
-                    <ProductCard
-                        _id='1'
-                        name="Danh Nhân Thế Giới - Einstein"
-                        price={400000}
-                        discount={200000}
-                        image="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg"
-                    />
-                    <ProductCard
-                        _id='1'
-                        name="Danh Nhân Thế Giới - Einstein"
-                        price={400000}
-                        discount={200000}
-                        image="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg"
-                    />
-                    <ProductCard
-                        _id='1'
-                        name="Danh Nhân Thế Giới - Einstein"
-                        price={400000}
-                        discount={200000}
-                        image="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg"
-                    />
-                    <ProductCard
-                        _id='1'
-                        name="Danh Nhân Thế Giới - Einstein"
-                        price={400000}
-                        discount={200000}
-                        image="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg"
-                    />
-                    <ProductCard
-                        _id='1'
-                        name="Danh Nhân Thế Giới - Einstein"
-                        price={400000}
-                        discount={200000}
-                        image="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg"
-                    />
+                    {listCateProduct.map((product) => (
+                        <ProductCard
+                            key={product._id}
+                            id={product._id || ''}
+                            name={product.name}
+                            price={product.price}
+                            discount={product.discount}
+                            image={product.images[0]}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

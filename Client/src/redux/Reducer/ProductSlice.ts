@@ -64,7 +64,7 @@ const productSlice = createSlice({
     name: "product",
     initialState,
     reducers: {
-        getProductByCate: (state, action) => {
+        getProduct: (state, action) => {
             state.products = action.payload;
         },
     },
@@ -123,6 +123,6 @@ const productSlice = createSlice({
     },
 });
 
-export const { getProductByCate } = productSlice.actions;
+export const { getProduct } = productSlice.actions;
 export default productSlice.reducer;
 

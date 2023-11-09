@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface dataType {
-    _id: string;
+    id: string;
     name: string;
     price: number;
     discount: number;
@@ -10,7 +10,7 @@ interface dataType {
 }
 const ProductCard = (product: dataType) => {
     return (
-        <Link to={`/products/${product._id}`}>
+        <Link to={`/products/${product.id}`}>
             <div className="border border-gray-100 w-[200px] py-3 p-2 relative">
                 <span className={`absolute rounded-full bg-red-500 text-white w-8 h-8 text-xs font-semibold text-center flex items-center justify-center right-1 top-1 ${product.discount === 0 ? 'hidden' : ''}`}>
                     {Math.ceil(((product.price - product.discount) / product.price) * 100)}%
@@ -19,11 +19,11 @@ const ProductCard = (product: dataType) => {
                     <img
                         src={product.image}
                         alt=""
-                        className="w-48 h-auto"
+                        className=" h-[180px]"
                     />
                 </div>
                 <div className="">
-                    <span className="block text-sm text-[#333333] font-sans font-roboto overflow-hidden overflow-ellipsis h-[2.5rem]">
+                    <span className="block text-sm text-[#333333] font-sans font-roboto overflow-hidden overflow-ellipsis h-[2.5rem] mb-1">
                         <span style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, overflow: "hidden" }}>
                             {product.name}
                         </span>
