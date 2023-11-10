@@ -16,6 +16,8 @@ import checkoutPage from "../pages/client/checkout";
 import OrderPage from "../pages/client/Order";
 import orderDetail from "../pages/client/OrderDetail";
 import BillCornfirm from "../pages/client/BillConfirm";
+import ordersPage from "../pages/admin/OrderPage";
+import orderUpdate from "../pages/admin/OrderUpdate";
 
 export const publicRoutes = [
     { path: routes.home, Component: homePage },
@@ -39,4 +41,6 @@ export const privateRoutes = [
     { path: routes.adminCategorys, Component: categoryPage },
     { path: routes.adminCategoryAdd, Component: categoryAdd },
     { path: routes.adminCategoryUpdate, Component: categoryUpdate },
+    { path: routes.adminOrders, Component: ordersPage },
+    { path: routes.adminOrderUpdate, Component: orderUpdate },
 ]

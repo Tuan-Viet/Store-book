@@ -19,7 +19,17 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hook';
 import { getAllProduct, removeProduct } from '../../../redux/Reducer/ProductSlice';
 import ICategory from '../../../interface/category';
 import { useForm } from 'react-hook-form';
+import { ColumnsType } from 'antd/es/table';
 
+interface DataType {
+    _id: string,
+    name: string,
+    images: any[],
+    price: number,
+    quantity: number,
+    discount: number,
+    categoryId: string,
+}
 
 const productPage = () => {
     const dispatch = useAppDispatch();
@@ -66,7 +76,7 @@ const productPage = () => {
         });
     }
 
-    const columns = [
+    const columns: ColumnsType<DataType> = [
         {
             title: 'Product Name',
             key: 'name',
@@ -81,17 +91,28 @@ const productPage = () => {
                     <a className='w-full overflow-hidden'>{record.name}</a>
                 </div>
             ),
+            sorter: (a: any, b: any) => a.name.localeCompare(b.name), // Sắp xếp theo bảng chữ cái
+            sortDirections: ['ascend', 'descend'],
+            showSorterTooltip: false,
             className: 'w-1/4',
         },
         {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            render: (value: number) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            sorter: (a: any, b: any) => a.price - b.price, // Sắp xếp theo số
+            sortDirections: ['ascend', 'descend'],
+            showSorterTooltip: false,
         },
         {
             title: 'Discount',
             dataIndex: 'discount',
             key: 'discount',
+            render: (value: number) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            sorter: (a: any, b: any) => a.discount - b.discount, // Sắp xếp theo số
+            sortDirections: ['ascend', 'descend'],
+            showSorterTooltip: false,
         },
         // {
         //     title: 'Description',
@@ -102,6 +123,9 @@ const productPage = () => {
             title: 'Quantity',
             dataIndex: 'quantity',
             key: 'quantity',
+            sorter: (a: any, b: any) => a.quantity - b.quantity, // Sắp xếp theo số
+            sortDirections: ['ascend', 'descend'],
+            showSorterTooltip: false,
         },
         {
             title: "Category",
@@ -132,6 +156,16 @@ const productPage = () => {
         },
 
     ];
+
+    const data: DataType[] = products.map((product: any) => ({
+        _id: product._id,
+        name: product.name,
+        images: product.images,
+        price: product.price,
+        quantity: product.quantity,
+        discount: product.discount,
+        categoryId: product.categoryId,
+    }));
     const [isLoading, setIsLoading] = useState(false);
     return (
         <div className="">
@@ -170,7 +204,7 @@ const productPage = () => {
                     </div>
 
                 ) : (
-                    <Table columns={columns} dataSource={products} pagination={{ pageSize: 20 }} />
+                    <Table columns={columns} dataSource={data} pagination={{ pageSize: 20 }} />
                 )}
             </div>
         </div>

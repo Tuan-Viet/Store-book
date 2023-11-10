@@ -9,6 +9,12 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from '../../../redux/hook';
 import { getAllCategory, removeCategory } from '../../../redux/Reducer/CategorySlice';
 import ICategory from '../../../interface/category';
+import { ColumnsType, TableProps } from 'antd/es/table';
+
+interface DataType {
+    key: React.Key;
+    name: string;
+}
 
 const categoryPage = () => {
     const dispatch = useAppDispatch();
@@ -33,12 +39,15 @@ const categoryPage = () => {
         });
     }
 
-    const columns = [
+    const columns: ColumnsType<DataType> = [
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            render: (text: String) => <a>{text}</a>,
+            render: (text: string) => <a>{text}</a>,
+            sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+            sortDirections: ['ascend', 'descend'],
+            showSorterTooltip: false,
         },
         {
             title: 'Action',
@@ -66,11 +75,13 @@ const categoryPage = () => {
 
     ];
 
-    const data = categories?.map((cate: ICategory) => ({
+    const data: DataType[] = categories?.map((cate: any) => ({
         key: cate._id,
         name: cate.name,
     }));
-
+    const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
+        console.log('params', pagination, filters, sorter, extra);
+    };
     const [isLoading, setIsLoading] = useState(false);
     return (
         <div className="">
@@ -99,7 +110,7 @@ const categoryPage = () => {
                     </div>
 
                 ) : (
-                    <Table columns={columns} dataSource={data} pagination={{ pageSize: 20 }} />
+                    <Table columns={columns} dataSource={data} pagination={{ pageSize: 20 }} onChange={onChange} />
                 )}
             </div>
         </div>
