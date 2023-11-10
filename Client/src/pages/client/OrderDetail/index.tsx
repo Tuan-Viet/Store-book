@@ -1,5 +1,5 @@
-import React, { Dispatch } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import React, { Dispatch, useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Space, Table, Tag, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useDispatch } from 'react-redux';
@@ -7,11 +7,16 @@ import TextArea from 'antd/es/input/TextArea';
 import Header from '../../../components/client/Header';
 import { authLogout } from '../../../redux/Reducer/authSlice';
 import Footer from '../../../components/client/Footer';
+import IOrder from '../../../interface/order';
+import axios from 'axios';
+import { getAllOrder, updateOrder } from '../../../redux/Reducer/OrderSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/hook';
 
 interface DataType {
-    key: string;
+    _id: string;
     image: string;
-    name: string;
+    nameProduct: string;
+    totalMoney: number;
     quantity: number;
     price: number;
 }
@@ -19,6 +24,49 @@ interface DataType {
 const orderDetail = () => {
     const dispatch: Dispatch<any> = useDispatch()
     const navigate = useNavigate();
+
+    const { id } = useParams();
+
+    const orders = useAppSelector((state) => state.Order.orders);
+
+    useEffect(() => {
+        dispatch(getAllOrder())
+    }, [dispatch]);
+    console.log(id);
+
+    const order = orders?.find((order: IOrder) => order._id === id);
+    const listOrderDetails = order?.orderDetails
+
+    const [orderDetailData, setOrderDetailData] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const orderDetailPromises = (listOrderDetails || []).map(async (detailId: any) => {
+                const response = await axios.get(`http://localhost:8080/api/orderDetails/${detailId}`);
+                const data = response.data
+
+                return data;
+            });
+
+            try {
+                const data = await Promise.all(orderDetailPromises);
+                setOrderDetailData(data);
+            } catch (error) {
+                console.error("Error fetching order details:", error);
+            }
+        };
+
+        fetchData();
+    }, [listOrderDetails]);
+    console.log("data:", orderDetailData);
+    const date = () => {
+        const date = new Date(order?.createdAt);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    }
     const columns: ColumnsType<DataType> = [
         {
             title: 'Sản phẩm',
@@ -28,7 +76,7 @@ const orderDetail = () => {
                         <img src={record?.image} alt="" className='w-14 h-auto object-cover' />
                     </div>
                     <div className="py-2 ">
-                        <span className='block'>{record?.name}</span>
+                        <span className='block'>{record?.nameProduct}</span>
                     </div>
                 </div>
             ),
@@ -45,37 +93,42 @@ const orderDetail = () => {
             key: 'quantity',
         },
         {
-            key: 'total',
+            key: 'totalMoney',
             title: 'Thành tiền',
             render: (record: any) => (record.price * record.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
         },
     ];
 
-    const data: DataType[] = [
-        {
-            key: '1',
-            name: 'Danh Nhân Thế Giới - Einstein',
-            image: 'https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg',
-            price: 299000,
-            quantity: 1,
-        },
-        {
-            key: '2',
-            name: 'Danh Nhân Thế Giới - Einstein',
-            image: 'https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg',
-            price: 299000,
-            quantity: 3,
-        },
-    ];
+    const data: DataType[] = orderDetailData.map((item: any) => ({
+        _id: item._id,
+        image: item.image,
+        nameProduct: item.nameProduct,
+        totalMoney: item.totalMoney,
+        quantity: item.quantity,
+        price: item.price,
+        status: item.status,
+    }));
 
-    // const total = data.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const handleCancel = () => {
+        const value: any = {
+            ...order,
+            status: 0,
+        };
 
-    // const totalRow: any = {
-    //     key: 'total',
-    //     price: total,
-    // };
+        dispatch(updateOrder(value));
+        message.error("Hủy đơn hàng thành công")
 
-    // data.push(totalRow);
+    };
+    const handleConfirm = () => {
+        const value: any = {
+            ...order,
+            status: 4,
+        };
+
+        dispatch(updateOrder(value));
+        message.info("Xác nhận đã nhận hàng thành công")
+
+    };
 
     const logOut = async () => {
         dispatch(authLogout());
@@ -114,20 +167,43 @@ const orderDetail = () => {
                     </div>
                     <div className="w-full">
                         <h3 className='uppercase text-[17px] mb-2'>
-                            Đơn hàng : #336895
+                            Đơn hàng : #{order?._id?.slice(0, 10)}
                         </h3>
                         <div className="flex items-center justify-between mb-5">
                             <div className="">
-                                <span className='block mb-2'>Đặt lúc - 02/11/2023</span>
-                                <span className='block font-bold text-xl'>Chờ xử lí</span>
+                                <span className='block mb-2'>Đặt lúc - {date()}</span>
+                                <span className={`block font-bold text-xl ${order?.status === 4 ? 'hidden' : ''}`}>
+                                    {(() => {
+                                        switch (order?.status) {
+                                            case 1:
+                                                return 'Đang xử lý';
+                                            case 2:
+                                                return 'Đang chuẩn bị hàng';
+                                            case 3:
+                                                return 'Đang giao';
+                                            case 0:
+                                                return 'Hủy';
+                                            default:
+                                                return 'Trạng thái không xác định';
+                                        }
+                                    })()}
+                                </span>
                             </div>
                             <div className="">
-                                <button className='border px-10 py-2 bg-red-500 text-white hover:bg-red-400 rounded-md'>
+                                <button
+                                    className={`border px-10 py-2 bg-red-500 text-white hover:bg-red-400 rounded-md ${order?.status === 1 || order?.status === 2 ? '' : 'hidden'}`}
+                                    onClick={handleCancel}
+                                >
                                     Hủy đơn hàng
                                 </button>
-                                {/* <button className='border px-10 py-2 bg-blue-500 text-white hover:bg-blue-400 rounded-md'>
+                                <button className={`border px-10 py-2 bg-blue-500 text-white hover:bg-blue-400 rounded-md  ${order?.status === 3 ? '' : 'hidden'}`}
+                                    onClick={handleConfirm}
+                                >
                                     Đã nhận được hàng
-                                </button> */}
+                                </button>
+                                <span className={`border px-10 py-2 bg-green-500 text-white rounded-md  ${order?.status === 4 ? '' : 'hidden'}`} >
+                                    Hoàn thành
+                                </span>
                             </div>
                         </div>
                         <Table
@@ -168,25 +244,30 @@ const orderDetail = () => {
                         />
                         <div className="grid grid-cols-2 gap-5">
                             <div className="">
-                                <h3 className='text-lg font-medium mb-3'>Thông tin gửi hàng</h3>
-                                <div className="space-y-1 text-sm">
-                                    <span className='block '>Lê Tuấn Việt</span>
-                                    <span className='block '>0986198509</span>
-                                    <span className='block '>Hà Nội</span>
-                                    <span className='block '>Ba Vì</span>
-                                    <span className='block '>Vật Phụ, Vật Lại, Ba Vì, Hà Nội</span>
+                                <h3 className='text-xl font-medium mb-3'>Thông tin gửi hàng</h3>
+                                <div className="flex">
+                                    <div className="space-y-2 text-base mr-20">
+                                        <span className='block '>Người nhận:</span>
+                                        <span className='block '>Số điện thoại:</span>
+                                        <span className='block '>Địa chỉ giao hàng:</span>
+                                    </div>
+                                    <div className="space-y-2 text-base">
+                                        <span className='block font-medium'>{order?.fullName}</span>
+                                        <span className='block font-medium'>{order?.phoneNumber}</span>
+                                        <span className='block font-medium'>{order?.address}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="">
                                 <h3 className='font-medium mb-3'>Ghi chú:</h3>
-                                <TextArea rows={5} />
+                                <TextArea rows={5} value={order?.note} disabled />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <Footer />
-        </div>
+        </div >
     )
 }
 

@@ -15,6 +15,7 @@ import productsPage from "../pages/client/Products";
 import checkoutPage from "../pages/client/checkout";
 import OrderPage from "../pages/client/Order";
 import orderDetail from "../pages/client/OrderDetail";
+import BillCornfirm from "../pages/client/BillConfirm";
 
 export const publicRoutes = [
     { path: routes.home, Component: homePage },
@@ -26,6 +27,7 @@ export const publicRoutes = [
     { path: routes.checkout, Component: checkoutPage },
     { path: routes.order, Component: OrderPage },
     { path: routes.orderDetail, Component: orderDetail },
+    { path: routes.billConfirm, Component: BillCornfirm },
 ]
 
 export const privateRoutes = [

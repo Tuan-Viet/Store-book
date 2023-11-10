@@ -7,8 +7,9 @@ const routes = {
     signin: "/signin",
     signup: "/signup",
     checkout: "/checkout",
-    order: "/order",
-    orderDetail: "/order/:id",
+    order: "account/order",
+    orderDetail: "account/order/:id",
+    billConfirm: "/invoice/:id",
 
     // Admin 
     admin: "/admin",

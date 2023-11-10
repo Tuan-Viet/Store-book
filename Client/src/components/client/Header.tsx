@@ -24,7 +24,7 @@ const Header = () => {
     const [open, setOpen] = useState(false);
     const user = useAppSelector((state: any) => state.auth.auth);
     const cartData = useAppSelector((state) => state.Cart.carts);
-    const carts = cartData.filter((cart: ICart) => cart.userId === user.user._id);
+    const carts = cartData.filter((cart: ICart) => cart.userId === user?.user?._id);
 
     let totalMoney: number = 0;
     carts?.map((item: any) => {
@@ -67,13 +67,13 @@ const Header = () => {
                     </span>
                 </span>
                 <li className="list-disc font-light mb-1">
-                    <Link to="">Tài khoản của tôi</Link>
+                    <Link to="/account">Tài khoản của tôi</Link>
                 </li>
                 <li className="list-disc font-light mb-1">
-                    <Link to="/order">Đơn hàng của tôi</Link>
+                    <Link to="/account/order">Đơn hàng của tôi</Link>
                 </li>
                 <li className="list-disc font-light mb-1">
-                    <Link to="">Danh sách địa chỉ</Link>
+                    <Link to="/account/address">Danh sách địa chỉ</Link>
                 </li>
                 <li className="list-disc font-light mb-1">
                     <button onClick={() => logOut()}>

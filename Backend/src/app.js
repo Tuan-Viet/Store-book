@@ -7,6 +7,9 @@ import productRouter from "./routes/product";
 import uploadRouter from "./routes/upload";
 import userRouter from "./routes/user";
 import cartRouter from "./routes/cart";
+import orderRouter from "./routes/order";
+import orderDeatailRouter from "./routes/orderDetail";
+
 
 dotenv.config();
 
@@ -23,5 +26,7 @@ app.use("/api/products", productRouter)
 app.use("/api/images", uploadRouter);
 app.use("/api", userRouter);
 app.use("/api/carts", cartRouter);
+app.use("/api/orders", orderRouter);
+app.use("/api/orderDetails", orderDeatailRouter);
 
 export const viteNodeApp = app;

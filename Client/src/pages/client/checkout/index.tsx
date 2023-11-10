@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../../../components/client/Footer";
 import Header from "../../../components/client/Header";
 import {
@@ -6,21 +6,68 @@ import {
     MinusOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Form, Input, Radio, Space, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { useAppDispatch, useAppSelector } from "../../../redux/hook";
+import { getAllCart } from "../../../redux/Reducer/CartSlice";
+import IOrder from "../../../interface/order";
+import { createOrder } from "../../../redux/Reducer/OrderSlice";
+import IOrderDetail from "../../../interface/orderDeatil";
 
 const checkoutPage = () => {
+    const dispatch = useAppDispatch();
     const [form] = Form.useForm();
-    const [quantity, setQuantity] = useState(1);
+    const navigate = useNavigate();
 
-    const handleIncrement = () => {
-        setQuantity(quantity + 1);
-    };
+    useEffect(() => {
+        dispatch(getAllCart());
+    }, [dispatch]);
 
-    const handleDecrement = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
+    const user = useAppSelector((state: any) => state.auth.auth);
+
+    const cartData = useAppSelector((state) => state.Cart.carts);
+    const carts = cartData.filter((cart) => cart.userId === user.user._id);
+    console.log("cartData", carts);
+
+    let totalMoney: number = 0;
+    carts?.map(item => {
+        totalMoney += item.totalMoney
+    })
+    let newCart: IOrderDetail[] = []
+
+    carts?.map(item => {
+        newCart.push({ productId: item.productId, price: item.price, quantity: item.quantity, totalMoney: item.totalMoney, image: item.image, nameProduct: item.nameProduct })
+    })
+    useEffect(() => {
+        dispatch(getAllCart())
+    }, [dispatch]);
+
+    const confirm = async (value: IOrder) => {
+        try {
+
+            const values = {
+                userId: user.user._id,
+                ...value,
+                carts: newCart,
+                totalMoney: totalMoney
+            };
+            console.log("value:", values);
+            // dispatch(createOrder(values));
+            const response = await dispatch(createOrder(values));
+            message.success("Thanh toán thành công");
+            if (createOrder.fulfilled.match(response)) {
+                const orderId = response.payload._id;
+                console.log(orderId);
+
+                setTimeout(() => {
+                    navigate(`/invoice/${orderId}`);
+                }, 2500);
+            }
+
+            // navigate('/cart')
+        } catch (error) {
+            console.log(error);
         }
     };
     return <>
@@ -31,6 +78,7 @@ const checkoutPage = () => {
                     <div className="w-1/2 px-8 py-10">
                         <Form
                             form={form}
+                            onFinish={confirm}
                             layout="vertical"
                         >
                             <h1
@@ -38,7 +86,7 @@ const checkoutPage = () => {
                             >Thông tin người nhân</h1>
                             <Form.Item
                                 label="Họ và tên"
-                                name="fullname"
+                                name="fullName"
                                 rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
                             >
                                 <Input className="py-2" />
@@ -63,13 +111,13 @@ const checkoutPage = () => {
                             >
                                 <TextArea rows={3} />
                             </Form.Item>
-                            <Form.Item name="paythod" label="Phương thức thanh thoán">
+                            <Form.Item name="pay_method" label="Phương thức thanh thoán">
                                 <Radio.Group>
                                     <Space direction="vertical">
                                         <Radio value="COD">Thanh toán tiền mặt khi nhận hàng</Radio>
-                                        <Radio value="b">Ví Momo</Radio>
-                                        <Radio value="b">Ví VNPAY</Radio>
-                                        <Radio value="b">Ví ZaloPay</Radio>
+                                        <Radio value="VNPAY">Ví Momo</Radio>
+                                        <Radio value="MOMO">Ví VNPAY</Radio>
+                                        <Radio value="ZALOPAY">Ví ZaloPay</Radio>
                                     </Space>
                                 </Radio.Group>
                             </Form.Item>
@@ -90,24 +138,30 @@ const checkoutPage = () => {
                     <div className="w-1/2 bg-gray-50 px-10 py-10">
                         <div className="flex border-b pb-8">
                             <h1 className="font-semibold text-2xl mr-2">Giỏ hàng</h1>
-                            <h2 className="font-semibold text-2xl">(3 sản phẩm)</h2>
+                            <h2 className="font-semibold text-2xl">({carts.length} sản phẩm)</h2>
                         </div>
-                        <div className="flex items-center -mx-8 px-6 py-5 border-b mb-1">
-                            <div className="flex w-4/5">
-                                <div className="max-w-[80px]">
-                                    <img className="" src="https://cdn0.fahasa.com/media/catalog/product/d/a/danh-nhan-the-gioi---einstein.jpg" alt="" />
-                                </div>
-                                <div className="space-y-1 pr-1">
-                                    <span className="text-sm line-clamp-1">Danh Nhân Thế Giới - Einstein Danh Nhân Thế Giới - Einstein</span>
-                                    <div className="">
-                                        <span className="text-sm text-primary  mr-2 ">249,000đ</span>
-                                        <span className="text-xs text-gray-500 line-through mr-2 ">300,000đ</span>
+                        {carts.map((item: any) => (
+                            <div className="flex items-center -mx-8 px-6 py-5 border-b mb-1">
+                                <div className="flex w-4/5">
+                                    <div className="max-w-[80px]">
+                                        <img className="" src={item.image} alt="" />
                                     </div>
-                                    <span className="text-sm">SL: 1</span>
+                                    <div className="space-y-1 pr-1">
+                                        <span className="text-sm line-clamp-1">{item.nameProduct}</span>
+                                        <div className="">
+                                            <span className="text-sm text-primary  mr-2 ">
+                                                {item?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                            </span>
+                                            {/* <span className="text-xs text-gray-500 line-through mr-2 ">300,000đ</span> */}
+                                        </div>
+                                        <span className="text-sm">SL: 1</span>
+                                    </div>
                                 </div>
+                                <span className="text-center w-1/5 font-semibold text-sm">
+                                    {item?.totalMoney.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
                             </div>
-                            <span className="text-center w-1/5 font-semibold text-sm">400,000đ</span>
-                        </div>
+                        ))}
                         <div className="py-3 font-medium text-sm flex justify-between">
                             <div className="space-y-3 ">
                                 <span className="block">Tổng sản phẩm</span>
@@ -115,9 +169,13 @@ const checkoutPage = () => {
                                 <span className="block">Tổng</span>
                             </div>
                             <div className="space-y-3 ">
-                                <span className="block">500,000đ</span>
+                                <span className="block">
+                                    {totalMoney.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
                                 <span className="block text-primary">Miễn phí</span>
-                                <span className="block">500,000đ</span>
+                                <span className="block">
+                                    {totalMoney.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
                             </div>
                         </div>
 

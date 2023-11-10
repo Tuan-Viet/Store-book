@@ -1,7 +1,8 @@
 interface IOrderDetail {
-    createdAt: any;
     _id?: string;
     orderId?: string;
+    image?: string;
+    nameProduct?: string;
     productId: string;
     price: number;
     quantity: number;

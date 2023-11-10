@@ -1,4 +1,4 @@
-import IOrderDetail from "./orderDetail";
+import IOrderDetail from "./orderDeatil";
 
 interface IOrder {
     createdAt: any;
@@ -10,9 +10,9 @@ interface IOrder {
     status: number;
     paymentStatus: number;
     // vourcher_code?: string;
-    pay_method: string;
+    pay_method: number;
     totalMoney: number;
-    orderDetail?: IOrderDetail[]
+    orderDetails: IOrderDetail[]
 }
 
 export default IOrder;

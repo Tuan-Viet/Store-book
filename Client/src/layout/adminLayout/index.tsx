@@ -17,17 +17,9 @@ const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-
-
 const AdminLayout = ({ children }: Props) => {
-
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const confirm = async () => {
-        dispatch(authLogout());
-        navigate("/");
-        await message.success("Logout successfully!");
-    };
 
     function getItem(
         label: React.ReactNode,
@@ -53,47 +45,49 @@ const AdminLayout = ({ children }: Props) => {
             getItem(<Link to={"/admin/category/add"}>Create New</Link >, '5'),
             getItem(<Link to={"/admin/category"}>View List</Link >, '6'),
         ]),
-        getItem('Logout', '9', <Popconfirm
-            title="Logout your account"
-            description="Are you sure to logout?"
-            onConfirm={() => confirm()}
-            okText="Yes"
-            cancelText="No"
-            okButtonProps={{ className: "bg-red-500 hover:bg-red-700" }}
-        >
-            <LogoutOutlined />
-        </Popconfirm>),
 
     ];
 
-    const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     const { auth } = useAppSelector((state) => state.auth);
 
+    const logOut = () => {
+        dispatch(authLogout());
+        navigate("/");
+        message.success("Logout successfully!");
+    };
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider
-                collapsible
-                collapsed={collapsed}
-                onCollapse={(value) => setCollapsed(value)}
                 style={{
-                    overflow: 'auto',
-                    height: '100vh',
-                    position: 'fixed',
+                    overflow: "auto",
+                    height: "100vh",
+                    position: "fixed",
                     left: 0,
                     top: 0,
                     bottom: 0,
                 }}
             >
-                <Space className='flex justify-center'>
+                <div className="flex justify-center">
                     <img src="../../public/image/logo.png" alt=""
                         className=' w-24 '
                     />
-                </Space>
-                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+                </div>
+                <Menu
+                    theme="dark"
+                    defaultSelectedKeys={["1"]}
+                    mode="inline"
+                    items={items}
+                />
+                <div className="fixed bottom-0">
+                    <button className="text-gray-300 bg-gray-800 w-[200px] py-3 hover:text-white" onClick={() => logOut()}>
+                        <LogoutOutlined className="mr-2" />
+                        Logout
+                    </button>
+                </div>
             </Sider>
             <Layout style={{ marginLeft: 200 }}>
                 {/* <Header style={{ padding: 0, background: colorBgContainer }} /> */}

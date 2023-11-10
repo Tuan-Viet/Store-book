@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react'
+import React, { Dispatch, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { Space, Table, Tag, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -6,24 +6,41 @@ import { useDispatch } from 'react-redux';
 import { authLogout } from '../../../redux/Reducer/authSlice';
 import Header from '../../../components/client/Header';
 import Footer from '../../../components/client/Footer';
+import { getAllOrder } from '../../../redux/Reducer/OrderSlice';
+import { useAppSelector } from '../../../redux/hook';
 
 interface DataType {
-    key: string;
-    sku: string;
+    _id: string;
     date: string;
-    price: number;
+    paymentStatus: number;
+    totalMoney: number;
     status: string;
 }
 
 const OrderPage = () => {
     const dispatch: Dispatch<any> = useDispatch()
     const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(getAllOrder());
+    }, [dispatch]);
+
+    const user = useAppSelector((state: any) => state.auth.auth);
+    const ordersData = useAppSelector((state) => state.Order.orders);
+    const orders = ordersData.filter((order: any) => order.userId === user.user._id);
+    console.log(orders);
+
+
     const columns: ColumnsType<DataType> = [
         {
             title: 'Mã đơn hàng',
-            dataIndex: 'sku',
-            key: 'sku',
-            render: (text) => <Link to={`/order/${text}`}>#{text}</Link>,
+            dataIndex: '_id',
+            key: '_id',
+            render: (text) => <Link to={`/account/order/${text}`}
+                className='uppercase'
+            >
+                #{text.slice(0, 10)}...
+            </Link>,
         },
         {
             title: 'Ngày đặt',
@@ -32,51 +49,61 @@ const OrderPage = () => {
         },
         {
             title: 'Thành tiền',
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'totalMoney',
+            key: 'totalMoney',
             render: (value: number) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
         },
         {
             title: 'Trạng thái thanh toán',
-            dataIndex: 'status',
-            key: 'status',
+            render: (value: any) => (
+                (value.paymentStatus === 1 ? 'Đã thanh toán' : 'Chưa thanh toán')
+            )
         },
         {
-            title: 'Vận chuyển',
+            title: 'Hành động',
             dataIndex: 'status',
-            key: 'status',
+            render: (value: number) => {
+                switch (value) {
+                    case 0:
+                        return 'Hủy';
+                    case 1:
+                        return 'Đang xử lý';
+                    case 2:
+                        return 'Đang chuẩn bị hàng';
+                    case 3:
+                        return 'Đang giao';
+                    case 4:
+                        return 'Hoàn thành';
+                    default:
+                        return 'Trạng thái không xác định';
+                }
+            }
         },
 
     ];
 
-    const data: DataType[] = [
-        {
-            key: '1',
-            sku: '310023',
-            date: '27/10/2023',
-            price: 20000,
-            status: 'Chờ xử lí',
-        },
-        {
-            key: '2',
-            sku: '310027',
-            date: '02/11/2023',
-            price: 20000,
-            status: 'Chờ xử lí',
-        },
-        {
-            key: '3',
-            sku: '310024',
-            date: '03/11/2023',
-            price: 20000,
-            status: 'Chờ xử lí',
-        },
-    ];
     const logOut = async () => {
         dispatch(authLogout());
         navigate("/");
         await message.success("Bạn đã đăng xuất");
     };
+    const data: DataType[] = orders.map((order: any) => {
+        const orderDate = new Date(order.createdAt);
+
+        const day = orderDate.getDate();
+        const month = orderDate.getMonth() + 1;
+        const year = orderDate.getFullYear();
+
+        const formattedDate = `${day}/${month}/${year}`;
+
+        return {
+            _id: order._id,
+            totalMoney: order.totalMoney,
+            date: formattedDate,
+            paymentStatus: order.paymentStatus,
+            status: order.status,
+        };
+    });
     return (
 
         <div>
@@ -93,13 +120,13 @@ const OrderPage = () => {
                         </h3>
                         <ul className="text-sm">
                             <li className="font-light mb-3 hover:text-[#1677ff]">
-                                <Link to="">Tài khoản của tôi</Link>
+                                <Link to="/account">Tài khoản của tôi</Link>
                             </li>
                             <li className="font-light mb-3 hover:text-[#1677ff]">
-                                <Link to="/order">Đơn hàng của tôi</Link>
+                                <Link to="/account/order">Đơn hàng của tôi</Link>
                             </li>
                             <li className="font-light mb-3 hover:text-[#1677ff]">
-                                <Link to="">Danh sách địa chỉ</Link>
+                                <Link to="/account/address">Danh sách địa chỉ</Link>
                             </li>
                             <li className="list-inside font-light mb-3 hover:text-[#1677ff]">
                                 <button onClick={() => logOut()}>

@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hook";
 import { getAllProduct, getProduct } from "../../../redux/Reducer/ProductSlice";
 import IProduct from "../../../interface/product";
 import ICart from "../../../interface/cart";
-import { createCart, getAllCart, getCart, } from "../../../redux/Reducer/CartSlice";
+import { createCart } from "../../../redux/Reducer/CartSlice";
 const productDetail = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -34,6 +34,10 @@ const productDetail = () => {
 
 
     const addToCart = async () => {
+        if (!auth) {
+            message.info("Bạn chưa đăng nhập");
+            return;
+        }
         try {
             if (product) {
                 const data = {
@@ -41,8 +45,8 @@ const productDetail = () => {
                     nameProduct: product.name,
                     image: product.images[0],
                     quantity: quantity,
-                    price: (product.discount ? product.discount : product.price),
-                    totalMoney: (product.discount ? product.discount * quantity : product.price * quantity),
+                    price: (product.discount > 0 ? product.discount : product.price),
+                    totalMoney: (product.discount > 0 ? product.discount * quantity : product.price * quantity),
                     userId: auth.user._id
                 };
                 dispatch(createCart(data));
@@ -129,7 +133,7 @@ const productDetail = () => {
                                 {product?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                             </span>
                             <span className={`text-sm font-medium text-white bg-red-500 p-1 rounded-lg ${product?.discount === 0 ? 'hidden' : ''}`}>
-                                {product ? Math.ceil(((product.price - product.discount) / product.price) * 100) : 1}%
+                                {product ? Math.ceil(((product.price - product.discount) / product.price) * 100) : ""}%
                             </span>
                         </div>
                         <div className="mb-6">

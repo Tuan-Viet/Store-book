@@ -18,7 +18,6 @@ const cart = () => {
     }, [dispatch]);
 
     const user = useAppSelector((state: any) => state.auth.auth);
-
     const cartData = useAppSelector((state) => state.Cart.carts);
     const carts = cartData.filter((cart) => cart.userId === user.user._id);
     let totalMoney: number = 0;
@@ -26,23 +25,15 @@ const cart = () => {
         totalMoney += item.totalMoney
     })
 
-    // const [quantity, setQuantity] = useState(1)
-    useEffect(() => {
-        // setIsLoading(true);
-        dispatch(getAllCart())
-    }, [dispatch]);
-
     const confirm = async (id: string) => {
         console.log(id);
 
         await dispatch(removeCart(id));
     }
-    const [quantity, setQuantity] = useState(1);
 
     const handleQuantityChange = async (productId: string, newQuantity: number, updatedTotalMoney: number) => {
         try {
             await dispatch(updateCartQuantityAsync({ productId, quantity: newQuantity, totalMoney: updatedTotalMoney }));
-            // Update local state
             const updatedCarts = carts.map((item) =>
                 item._id === productId ? { ...item, quantity: newQuantity, totalMoney: updatedTotalMoney } : item
             );
