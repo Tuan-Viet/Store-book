@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 const homePage = () => {
     const dispatch: Dispatch<any> = useDispatch()
     const products = useAppSelector((state) => state.product.products);
-    console.log("data:", products);
 
     useEffect(() => {
         void dispatch(getAllProduct())
@@ -50,7 +49,7 @@ const homePage = () => {
 
                 </div>
                 <div className="italic text-center text-primary hover:text-sky-500 underline">
-                    <Link to={`/products`}>Xem thêm..</Link>
+                    <Link to={`/collections`}>Xem thêm..</Link>
                 </div>
             </div>
         </div >

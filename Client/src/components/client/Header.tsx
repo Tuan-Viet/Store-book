@@ -8,14 +8,15 @@ import {
     LoginOutlined,
     MenuOutlined
 } from '@ant-design/icons';
-import { Badge, Button, Drawer, Dropdown, Form, MenuProps, Popover, Space, message } from "antd";
+import { Badge, Button, Drawer, Dropdown, Form, Input, MenuProps, Popover, Space, message } from "antd";
 import { AnyIfEmpty, useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../../redux/Reducer/authSlice";
 import { useAppSelector } from "../../redux/hook";
 import { getAllCart, removeCart } from "../../redux/Reducer/CartSlice";
 import ICart from "../../interface/cart";
-
-
+import { getAllCategory } from "../../redux/Reducer/CategorySlice";
+import { getAllProduct } from "../../redux/Reducer/ProductSlice";
+import axios from "axios";
 
 const Header = () => {
     const dispatch: Dispatch<any> = useDispatch()
@@ -25,18 +26,18 @@ const Header = () => {
     const user = useAppSelector((state: any) => state.auth.auth);
     const cartData = useAppSelector((state) => state.Cart.carts);
     const carts = cartData.filter((cart: ICart) => cart.userId === user?.user?._id);
+    const categories = useAppSelector((state) => state.category.categories);
+    const listCate = categories.filter(cate => cate.name !== 'Uncategorized')
 
     let totalMoney: number = 0;
     carts?.map((item: any) => {
         totalMoney += item.totalMoney
     })
 
-    // const [quantity, setQuantity] = useState(1)
     useEffect(() => {
-        // setIsLoading(true);
         dispatch(getAllCart())
+        dispatch(getAllCategory())
     }, [dispatch]);
-
 
     const showDrawer = () => {
         if (carts?.length === 0) {
@@ -49,11 +50,13 @@ const Header = () => {
     const onClose = () => {
         setOpen(false);
     };
+
     const logOut = () => {
         dispatch(authLogout());
         message.success("Bạn đã đăng xuất!");
         navigate("/signin");
     };
+
     const acount = user ? (
         <div className="">
             <h1 className="uppercase text-center pb-2 mb-2 border-b-[1px] text-base tracking-widest text-[#333333]">
@@ -86,57 +89,23 @@ const Header = () => {
         <Link to="/signin"><LoginOutlined className="mr-2" />Đăng nhập</Link>
     );
 
-    const items: MenuProps['items'] = [
-        {
-            label: "Sách thiếu nhi",
-            key: '1',
-            className: "h-10",
-        },
-        {
-            label: "Sách văn học",
-            key: '2',
-            className: "h-10",
+    const urlParams = new URLSearchParams(location.search);
 
-        },
-        {
-            label: "Kinh tế",
-            key: '3',
-            className: "h-10",
+    const handFound = async (value: any) => {
+        const searchText = value._searchText || '';
+        urlParams.set("_searchText", encodeURIComponent(searchText));
+        const queryString = `${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+        await dispatch(getAllProduct(queryString))
 
-        },
-        {
-            label: "Truyện cổ tích",
-            key: '4',
-            className: "h-10",
+        navigate(`/collections?${queryString}`);
+    };
 
-        },
-        {
-            label: "Sách thiếu nhi",
-            key: '5',
-            className: "h-10",
+    const items: MenuProps['items'] = listCate.map((cate: any, index) => ({
+        label: <Link to={`/collections/${cate._id}`}>{cate.name}</Link>,
+        key: String(index + 1),
+        className: "h-10",
+    }));
 
-        },
-        {
-            label: "Sách văn học",
-            key: '6',
-            className: "h-10",
-
-        },
-        {
-            label: "Kinh tế",
-            key: '7',
-            className: "h-10",
-
-        },
-        {
-            label: "Truyện cổ tích",
-            key: '8',
-            className: "h-10",
-
-        },
-
-
-    ];
     return (
         <div className="">
             <div className="bg-slate-100 h-8 flex items-center">
@@ -159,13 +128,25 @@ const Header = () => {
                         />
                     </Link>
                 </div>
-                <form className="flex">
-                    <input type="text" className='border p-2 w-[400px] outline-none text-[#333333]'
-                        placeholder="Bạn cần tìm gì?" />
-                    <button type="submit" className='w-10 bg-primary p-2 text-center flex items-center justify-center'>
-                        <SearchOutlined className='text-white' />
-                    </button>
-                </form>
+                <div className="max-h-[55px]">
+                    <Form
+                        onFinish={handFound}
+                    >
+                        <Form.Item
+                            name="_searchText"
+                        >
+                            <Input
+                                size="large"
+                                className="text-gray-600 rounded-full w-[500px] pl-5"
+                                placeholder="Bạn cần tìm gì"
+                                suffix={(
+                                    <button type="submit" className="bg-primary rounded-full w-10 h-10 hover:bg-sky-500">
+                                        <SearchOutlined className=" text-gray-100" />
+                                    </button>
+                                )} />
+                        </Form.Item>
+                    </Form>
+                </div>
                 <div className="">
                     {user ? (
                         <div className="">

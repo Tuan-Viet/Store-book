@@ -42,7 +42,7 @@ export const getProducts = async (req, res) => {
     try {
         const {
             _page = 1,
-            _limit = 8,
+            _limit = 20,
             _sort = "createdAt",
             _order = "desc",
             _searchText,
@@ -58,6 +58,7 @@ export const getProducts = async (req, res) => {
                 $diacriticSensitive: false,
             }
         }
+
         if (_minPrice !== undefined && _maxPrice !== undefined) {
             query.price = { $gte: _minPrice, $lte: _maxPrice }
         }
@@ -83,7 +84,6 @@ export const getProducts = async (req, res) => {
 
         const options = {
             page: _page,
-            limit: _limit,
             sort: {
                 [_sort]: _order === "desc" ? -1 : 1,
             },

@@ -11,7 +11,7 @@ interface dataType {
 const ProductCard = (product: dataType) => {
     return (
         <Link to={`/products/${product.id}`}>
-            <div className="border border-gray-100 w-[200px] py-3 p-2 relative">
+            <div className="border border-gray-100 w-[200px] py-3 p-2 relative mb-3">
                 <span className={`absolute rounded-full bg-red-500 text-white w-8 h-8 text-xs font-semibold text-center flex items-center justify-center right-1 top-1 ${product.discount === 0 ? 'hidden' : ''}`}>
                     {Math.ceil(((product.price - product.discount) / product.price) * 100)}%
                 </span>

@@ -58,7 +58,6 @@ const orderDetail = () => {
 
         fetchData();
     }, [listOrderDetails]);
-    console.log("data:", orderDetailData);
     const date = () => {
         const date = new Date(order?.createdAt);
         const day = date.getDate();
@@ -110,23 +109,31 @@ const orderDetail = () => {
     }));
 
     const handleCancel = () => {
-        const value: any = {
-            ...order,
-            status: 0,
-        };
+        try {
+            const value: any = {
+                ...order,
+                status: 0,
+            };
+            dispatch(updateOrder(value));
+            message.error("Hủy đơn hàng thành công")
+        } catch (error) {
+            console.log(error);
 
-        dispatch(updateOrder(value));
-        message.error("Hủy đơn hàng thành công")
+        }
 
     };
     const handleConfirm = () => {
-        const value: any = {
-            ...order,
-            status: 4,
-        };
+        try {
+            const value: any = {
+                ...order,
+                status: 4,
+            };
+            dispatch(updateOrder(value));
+            message.info("Xác nhận đã nhận hàng thành công")
+        } catch (error) {
+            console.log(error);
 
-        dispatch(updateOrder(value));
-        message.info("Xác nhận đã nhận hàng thành công")
+        }
 
     };
 

@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../../components/client/productCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/hook";
-import { getAllProduct, getProduct } from "../../../redux/Reducer/ProductSlice";
+import { getAllProduct } from "../../../redux/Reducer/ProductSlice";
 import IProduct from "../../../interface/product";
 import ICart from "../../../interface/cart";
 import { createCart } from "../../../redux/Reducer/CartSlice";
@@ -78,8 +78,15 @@ const productDetail = () => {
     const handleImageClick = (index: any) => {
         setSelectedImage(index);
     };
-    const cateProduct = products?.filter((newProduct: IProduct) => newProduct.categoryId?._id === product?.categoryId?._id);
+
+    const cateProduct = products?.filter((newProduct: IProduct) => (
+        newProduct.categoryId?._id === product?.categoryId?._id && newProduct._id !== product?._id
+    ));
     const listCateProduct = cateProduct.slice(0, 5);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0 });
+    }, []);
     return <>
         <Header />
         <div className="w-[1170px] mx-auto">
@@ -100,7 +107,7 @@ const productDetail = () => {
                     <div >
                         <div className="w-[300px] h-[450px]">
                             <img src={product?.images[selectedImage]} alt=""
-                                className=" object-cover"
+                                className=" object-cover border"
                             />
                         </div>
                     </div>
@@ -197,7 +204,37 @@ const productDetail = () => {
                     </div>
                 </div>
             </div>
+            <div className="">
+                {/* <p>
+                    {product?.description}
+                </p>
+                <span>
+                    Tôi Thấy Hoa Vàng Trên Cỏ Xanh
 
+                    Những câu chuyện nhỏ xảy ra ở một ngôi làng nhỏ: chuyện người, chuyện cóc, chuyện ma, chuyện công chúa và hoàng tử , rồi chuyện đói ăn, cháy nhà, lụt lội,... Bối cảnh là trường học, nhà trong xóm, bãi tha ma. Dẫn chuyện là cậu bé 15 tuổi tên Thiều. Thiều có chú ruột là chú Đàn, có bạn thân là cô bé Mận. Nhưng nhân vật đáng yêu nhất lại là Tường, em trai Thiều, một cậu bé học không giỏi. Thiều, Tường và những đứa trẻ sống trong cùng một làng, học cùng một trường, có biết bao chuyện chung. Chúng nô đùa, cãi cọ rồi yêu thương nhau, cùng lớn lên theo năm tháng, trải qua bao sự kiện biến cố của cuộc đời.
+
+                    Tác giả vẫn giữ cách kể chuyện bằng chính giọng trong sáng hồn nhiên của trẻ con. 81 chương ngắn là 81 câu chuyện hấp dẫn với nhiều chi tiết thú vị, cảm động, có những tình tiết bất ngờ, từ đó lộ rõ tính cách người. Cuốn sách, vì thế, có sức ám ảnh.
+
+                    Mã hàng	8934974187622
+                    Tên Nhà Cung Cấp	NXB Trẻ
+                    Tác giả	Nguyễn Nhật Ánh
+                    NXB	Trẻ
+                    Năm XB	2023
+                    Ngôn Ngữ	Tiếng Việt
+                    Trọng lượng (gr)	390
+                    Kích Thước Bao Bì	20 x 13 x 1.8 cm
+                    Số trang	378
+                    Hình thức	Bìa Mềm
+                    Sản phẩm bán chạy nhất	Top 100 sản phẩm Tiểu thuyết bán chạy của tháng
+                    Giá sản phẩm trên Fahasa.com đã bao gồm thuế theo luật hiện hành. Bên cạnh đó, tuỳ vào loại sản phẩm, hình thức và địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như Phụ phí đóng gói, phí vận chuyển, phụ phí hàng cồng kềnh,...
+                    Chính sách khuyến mãi trên Fahasa.com không áp dụng cho Hệ thống Nhà sách Fahasa trên toàn quốc
+                    Tôi Thấy Hoa Vàng Trên Cỏ Xanh
+
+                    Những câu chuyện nhỏ xảy ra ở một ngôi làng nhỏ: chuyện người, chuyện cóc, chuyện ma, chuyện công chúa và hoàng tử , rồi chuyện đói ăn, cháy nhà, lụt lội,... Bối cảnh là trường học, nhà trong xóm, bãi tha ma. Dẫn chuyện là cậu bé 15 tuổi tên Thiều. Thiều có chú ruột là chú Đàn, có bạn thân là cô bé Mận. Nhưng nhân vật đáng yêu nhất lại là Tường, em trai Thiều, một cậu bé học không giỏi. Thiều, Tường và những đứa trẻ sống trong cùng một làng, học cùng một trường, có biết bao chuyện chung. Chúng nô đùa, cãi cọ rồi yêu thương nhau, cùng lớn lên theo năm tháng, trải qua bao sự kiện biến cố của cuộc đời.
+
+                    Tác giả vẫn giữ cách kể chuyện bằng chính giọng trong sáng hồn nhiên của trẻ con. 81 chương ngắn là 81 câu chuyện hấp dẫn với nhiều chi tiết thú vị, cảm động, có những tình tiết bất ngờ, từ đó lộ rõ tính cách người. Cuốn sách, vì thế, có sức ám ảnh.
+                </span> */}
+            </div>
             <div className="mb-32">
                 <h3 className='uppercase border-l-4 border-b-2 p-3 my-3 border-primary '>
                     Sản phẩm cùng loại
