@@ -165,7 +165,7 @@ const Header = () => {
                         </div>
                     )}
 
-                    <Drawer title={`GIỎ HÀNG (${carts.length})`} placement="right" onClose={onClose} open={open}>
+                    <Drawer width={500} title={`GIỎ HÀNG (${carts.length})`} placement="right" onClose={onClose} open={open}>
                         <div className="pb-2 mb-2 border-b-[1px] text-[#333333]">
                             {carts.map((cart: ICart) => (
                                 <div className="flex justify-between mb-3">
@@ -184,7 +184,7 @@ const Header = () => {
                                             <span className="block text-sm"> {cart?.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                         </div>
                                     </div>
-                                    <span className="block text-sm w-1/5">SL: {cart.quantity}</span>
+                                    <span className="block text-sm w-1/5 text-end px-5">SL: {cart.quantity}</span>
                                 </div>
                             ))}
 

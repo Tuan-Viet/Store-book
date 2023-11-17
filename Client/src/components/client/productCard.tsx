@@ -11,19 +11,19 @@ interface dataType {
 const ProductCard = (product: dataType) => {
     return (
         <Link to={`/products/${product.id}`}>
-            <div className="border border-gray-100 w-[200px] py-3 p-2 relative mb-3">
+            <div className="border border-gray-200 w-[200px] py-3 p-2 relative mb-3 hover:border-primary ">
                 <span className={`absolute rounded-full bg-red-500 text-white w-8 h-8 text-xs font-semibold text-center flex items-center justify-center right-1 top-1 ${product.discount === 0 ? 'hidden' : ''}`}>
                     {Math.ceil(((product.price - product.discount) / product.price) * 100)}%
                 </span>
-                <div className=" flex justify-center items-center">
+                <div className=" flex justify-center items-center ">
                     <img
                         src={product.image}
                         alt=""
-                        className=" h-[180px]"
+                        className=" h-[180px] "
                     />
                 </div>
                 <div className="">
-                    <span className="block text-sm text-[#333333] font-sans font-roboto overflow-hidden overflow-ellipsis h-[2.5rem] mb-1">
+                    <span className="block text-sm text-[#333333] font-sans font-roboto overflow-hidden overflow-ellipsis h-[2.5rem] my-2">
                         <span style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 2, overflow: "hidden" }}>
                             {product.name}
                         </span>

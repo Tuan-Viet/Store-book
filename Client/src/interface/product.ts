@@ -5,6 +5,7 @@ interface IProduct {
     name: string;
     price: number;
     discount: number;
+    buyCounts: number;
     author: string;
     description: string;
     quantity: number;
